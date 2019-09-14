@@ -80,7 +80,7 @@ fun sortLines(file: File): File {
                 File(tmpDir, "${chunkNum}.txt").bufferedWriter().use { w ->
                     for (idx in 0 until lines.lastIndex) {
                         w.write(lines[idx])
-                        w.write("\n")
+                        w.newLine()
                     }
                     lines.lastOrNull()?.let { w.write(it) }
                 }
