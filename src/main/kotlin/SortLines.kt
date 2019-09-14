@@ -14,7 +14,11 @@ private fun readLines(reader: BufferedReader, into: MutableList<String>): Boolea
     return false
 }
 
-class MergingSortedIterator<T : Comparable<T>>(private val iterators: List<Iterator<T>>) : Iterator<T> {
+/**
+ * each item in [iterators] must be sorted
+ * then the resulting iterator is sorted too
+ */
+class MergingIterator<T : Comparable<T>>(private val iterators: List<Iterator<T>>) : Iterator<T> {
 
     private val cache = MutableList<T?>(iterators.size) { null }
 
@@ -26,10 +30,10 @@ class MergingSortedIterator<T : Comparable<T>>(private val iterators: List<Itera
         var minI = -1
 
         for (i in iterators.indices) {
-            val iterator = iterators[i]
+            val sorted = iterators[i]
 
-            if (cache[i] == null && iterator.hasNext()) {
-                cache[i] = iterator.next()
+            if (cache[i] == null && sorted.hasNext()) {
+                cache[i] = sorted.next()
             }
 
             if (min == null) {
@@ -50,11 +54,19 @@ class MergingSortedIterator<T : Comparable<T>>(private val iterators: List<Itera
     }
 }
 
+/**
+ * Sorts a large text file line by line
+ *
+ * Needs additional fileSize * 2 disk space to work. Clears tmp files after it's finished
+ *
+ * @return new sorted file. Original still kept on the disk
+ */
 fun sortLines(file: File): File {
     val tmpDir = File(file.parentFile, "tmp")
     tmpDir.mkdir()
 
     try {
+        // read chunks into memory, sort them
         file.bufferedReader().use { r ->
             var end = false
             var chunkNum = 0L
@@ -79,11 +91,12 @@ fun sortLines(file: File): File {
             }
         }
 
+        // merge chunks
         val readers = tmpDir.listFiles()!!.map { it.bufferedReader() }
         try {
             val sorted = File(file.parentFile, "${file.nameWithoutExtension}_sorted.txt")
             sorted.bufferedWriter().use { w ->
-                MergingSortedIterator(readers.map { it.lineSequence().iterator() }).forEach {
+                MergingIterator(readers.map { it.lineSequence().iterator() }).forEach {
                     w.write(it)
                     w.newLine()
                 }
