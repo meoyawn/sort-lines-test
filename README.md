@@ -9,11 +9,11 @@ Generate a large text file and sort it line by line
 ./gradlew run
 ```
 
-Tune params in `src/main/kotlin/Main.kt`
+Tune params in [src/main/kotlin/Main.kt](`src/main/kotlin/Main.kt`)
 
 ## Test
 
-Silly sanity check tests
+Silly sanity check
 
 ```sh
 ./gradlew test
