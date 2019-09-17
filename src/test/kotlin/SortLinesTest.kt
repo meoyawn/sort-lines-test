@@ -7,17 +7,23 @@ class SortLinesTest {
 
     @Test
     fun empty(@TempDir dir: File) {
-        val f = File(dir, "foo.txt")
-        f.createNewFile()
+        val inp = File(dir, "foo.txt")
+        inp.createNewFile()
+        val out = File(dir, "bar.txt")
 
-        assertEquals(expected = "", actual = sortLines(f).readText())
+        sortLines(inp, out)
+
+        assertEquals(expected = "", actual = out.readText())
     }
 
     @Test
     fun singleLine(@TempDir dir: File) {
         val f = File(dir, "foo.txt")
         f.printWriter().use { it.println("500") }
-        assertEquals(expected = "500\n", actual = sortLines(f).readText())
+
+        val out = File(dir, "bar.txt")
+        sortLines(f, out)
+        assertEquals(expected = "500\n", actual = out.readText())
     }
 
     @Test
@@ -30,6 +36,9 @@ class SortLinesTest {
             it.println("3")
         }
 
+        val out = File(dir, "bar.txt")
+        sortLines(f, out)
+
         assertEquals(
             expected = """
                         1
@@ -38,7 +47,7 @@ class SortLinesTest {
                         500
                         
                         """.trimIndent(),
-            actual = sortLines(f).readText()
+            actual = out.readText()
         )
     }
 }

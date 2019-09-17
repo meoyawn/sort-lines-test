@@ -1,20 +1,26 @@
-SortLines Test
+Sort Lines Test
 ==============
 
-## Use
-
-Generate a large text file and sort it line by line
+## Generate file
 
 ```sh
-./gradlew run
+./gradlew run --args="generate 5000 1000 foo.txt"
 ```
 
-Tune params in [Main.kt](src/main/kotlin/Main.kt)
+Generates `foo.txt` with `5000` lines and max line length of `1000`
 
-## Test
-
-Silly sanity check
+## Sort file
 
 ```sh
-./gradlew test
+./gradlew run --args="sort foo.txt bar.txt"
 ```
+
+Sorts `foo.txt` and puts the result in `bar.txt`
+
+## Verify sorting
+
+```sh
+./gradlew run --args="verify bar.txt"
+```
+
+Verifies if `bar.txt` is sorted. Prints the result

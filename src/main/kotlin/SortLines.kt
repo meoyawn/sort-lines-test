@@ -61,7 +61,7 @@ class MergingIterator<T : Comparable<T>>(private val iterators: List<Iterator<T>
  *
  * @return new sorted file. Original still kept on the disk
  */
-fun sortLines(file: File): File {
+fun sortLines(file: File, out: File) {
     val tmpDir = File(file.parentFile, "tmp")
     tmpDir.mkdir()
 
@@ -94,14 +94,12 @@ fun sortLines(file: File): File {
         // merge chunks
         val readers = tmpDir.listFiles()!!.map { it.bufferedReader() }
         try {
-            val sorted = File(file.parentFile, "${file.nameWithoutExtension}_sorted.txt")
-            sorted.bufferedWriter().use { w ->
+            out.bufferedWriter().use { w ->
                 MergingIterator(readers.map { it.lineSequence().iterator() }).forEach {
                     w.write(it)
                     w.newLine()
                 }
             }
-            return sorted
         } finally {
             readers.forEach(BufferedReader::close)
         }
